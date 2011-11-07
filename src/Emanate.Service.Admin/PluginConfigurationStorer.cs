@@ -31,26 +31,24 @@ namespace Emanate.Service.Admin
                     if (configurationAttribute == null)
                         continue;
 
-                    var properties = GetConfigProperties(type, appConfig);
-
-                    yield return new ConfigurationInfo(configurationAttribute.Name, properties);
+                    yield return new ConfigurationInfo(configurationAttribute.Name, configurationAttribute.ViewType);
                 }
             }
         }
 
         public void Save(IEnumerable<ConfigurationInfo> configurations)
         {
-            if (appConfig == null)
-                throw new InvalidOperationException("Cannot save configuration before it's been loaded");
+            //if (appConfig == null)
+            //    throw new InvalidOperationException("Cannot save configuration before it's been loaded");
 
-            appConfig.AppSettings.Settings.Clear();
-            foreach (var property in configurations.SelectMany(c => c.Properties))
-            {
-                var value = property.Value != null ? property.Value.ToString() : "";
-                appConfig.AppSettings.Settings.Add(property.Key,value);
-            }
+            //appConfig.AppSettings.Settings.Clear();
+            //foreach (var property in configurations.SelectMany(c => c.Properties))
+            //{
+            //    var value = property.Value != null ? property.Value.ToString() : "";
+            //    appConfig.AppSettings.Settings.Add(property.Key,value);
+            //}
 
-            appConfig.Save(ConfigurationSaveMode.Full);
+            //appConfig.Save(ConfigurationSaveMode.Full);
         }
 
         private static Configuration GetServiceConfiguration()

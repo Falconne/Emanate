@@ -1,17 +1,29 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System;
+using System.Windows.Controls;
 
 namespace Emanate.Service.Admin
 {
     public class ConfigurationInfo
     {
-        public ConfigurationInfo(string name, IEnumerable<ConfigurationProperty> properties)
+        public string Name { get; set; }
+        private readonly Type viewType;
+
+        public ConfigurationInfo(string name, Type viewType)
         {
             Name = name;
-            Properties = new ObservableCollection<ConfigurationProperty>(properties);
+            this.viewType = viewType;
         }
 
-        public string Name { get; private set; }
-        public ObservableCollection<ConfigurationProperty> Properties { get; private set; }
+        private UserControl view;
+        public UserControl View
+        {
+            get
+            {
+                if (view == null)
+                    view = (UserControl)Activator.CreateInstance(viewType);
+
+                return view;
+            }
+        }
     }
 }

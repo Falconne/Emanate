@@ -2,7 +2,7 @@ using Emanate.Core.Configuration;
 
 namespace Emanate.Core.Input.TeamCity
 {
-    [Configuration("TeamCity")]
+    [Configuration("TeamCity", typeof(TeamCityAdmin))]
     public class TeamCityConfiguration
     {
         [Key("TeamCityUri")]

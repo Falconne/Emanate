@@ -63,7 +63,8 @@
             <Button Content="Cancel" Command="{Binding CancelCommand}"  Margin="10" Padding="10" />
             <Button Content="Apply" Command="{Binding ApplyCommand}" Margin="10" Padding="10" />
         </StackPanel>
-        <ItemsControl ItemsSource="{Binding ElementName=configInfos, Path=SelectedItem.Properties}" 
+        <ContentControl Content="{Binding ElementName=configInfos, Path=SelectedItem.View}" />
+        <!--<ItemsControl ItemsSource="{Binding ElementName=configInfos, Path=SelectedItem.Properties}" 
                       ItemTemplateSelector="{StaticResource propertyTemplateSelector}"
                       Padding="5">
             <ItemsControl.ItemsPanel>
@@ -71,7 +72,6 @@
                     <StackPanel ScrollViewer.VerticalScrollBarVisibility="Auto" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-        </ItemsControl>
-        
+        </ItemsControl>-->
     </DockPanel>
 </Window>
