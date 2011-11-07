@@ -15,26 +15,6 @@ namespace Emanate.Core.Input.TeamCity
     {
         public TeamCityAdmin()
         {
-            //Projects = new ObservableCollection<TeamCityItem>
-            //               {
-            //                   new TeamCityItem
-            //                       {
-            //                           Name = "Proj1",
-            //                           Children = new ObservableCollection<BuildInfo>
-            //                                        {
-            //                                            new BuildInfo {Name = "Build1"}
-            //                                        }
-            //                       },
-            //                       new ProjectInfo
-            //                       {
-            //                           Name = "Proj2",
-            //                           Builds = new ObservableCollection<BuildInfo>
-            //                                        {
-            //                                            new BuildInfo {Name = "Build2"},
-            //                                            new BuildInfo {Name = "Build3"}
-            //                                        }
-            //                       }
-            //               };
             Projects = new ObservableCollection<TeamCityItem>(CreateFoos());
             InitializeComponent();
         }
@@ -96,10 +76,8 @@ namespace Emanate.Core.Input.TeamCity
 
     public class TeamCityItem : INotifyPropertyChanged
     {
-
         bool? _isChecked = false;
         TeamCityItem _parent;
-
 
         public TeamCityItem(string name)
         {
@@ -117,11 +95,8 @@ namespace Emanate.Core.Input.TeamCity
         }
 
         public List<TeamCityItem> Children { get; private set; }
-
         public bool IsInitiallySelected { get; set; }
-
         public string Name { get; private set; }
-
 
         /// <summary>
         /// Gets/sets the state of the associated UI toggle (ex. CheckBox).
@@ -191,18 +166,18 @@ namespace Emanate.Core.Input.TeamCity
         /// IsChecked Attached Dependency Property
         /// </summary>
         public static readonly DependencyProperty IsCheckedProperty =
-            DependencyProperty.RegisterAttached("IsChecked", typeof(Nullable<bool>), typeof(VirtualToggleButton),
-                new FrameworkPropertyMetadata((Nullable<bool>)false,
+            DependencyProperty.RegisterAttached("IsChecked", typeof(bool?), typeof(VirtualToggleButton),
+                new FrameworkPropertyMetadata((bool?)false,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal,
-                    new PropertyChangedCallback(OnIsCheckedChanged)));
+                    OnIsCheckedChanged));
 
         /// <summary>
         /// Gets the IsChecked property.  This dependency property 
         /// indicates whether the toggle button is checked.
         /// </summary>
-        public static Nullable<bool> GetIsChecked(DependencyObject d)
+        public static bool? GetIsChecked(DependencyObject d)
         {
-            return (Nullable<bool>)d.GetValue(IsCheckedProperty);
+            return (bool?)d.GetValue(IsCheckedProperty);
         }
 
         /// <summary>
@@ -219,10 +194,10 @@ namespace Emanate.Core.Input.TeamCity
         /// </summary>
         private static void OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            UIElement pseudobutton = d as UIElement;
+            var pseudobutton = d as UIElement;
             if (pseudobutton != null)
             {
-                Nullable<bool> newValue = (Nullable<bool>)e.NewValue;
+                var newValue = (bool?)e.NewValue;
                 if (newValue == true)
                 {
                     RaiseCheckedEvent(pseudobutton);
@@ -247,7 +222,7 @@ namespace Emanate.Core.Input.TeamCity
         /// </summary>
         public static readonly DependencyProperty IsThreeStateProperty =
             DependencyProperty.RegisterAttached("IsThreeState", typeof(bool), typeof(VirtualToggleButton),
-                new FrameworkPropertyMetadata((bool)false));
+                new FrameworkPropertyMetadata(false));
 
         /// <summary>
         /// Gets the IsThreeState property.  This dependency property 
@@ -278,8 +253,8 @@ namespace Emanate.Core.Input.TeamCity
         /// </summary>
         public static readonly DependencyProperty IsVirtualToggleButtonProperty =
             DependencyProperty.RegisterAttached("IsVirtualToggleButton", typeof(bool), typeof(VirtualToggleButton),
-                new FrameworkPropertyMetadata((bool)false,
-                    new PropertyChangedCallback(OnIsVirtualToggleButtonChanged)));
+                new FrameworkPropertyMetadata(false,
+                    OnIsVirtualToggleButtonChanged));
 
         /// <summary>
         /// Gets the IsVirtualToggleButton property.  This dependency property 
@@ -306,7 +281,7 @@ namespace Emanate.Core.Input.TeamCity
         /// </summary>
         private static void OnIsVirtualToggleButtonChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            IInputElement element = d as IInputElement;
+            var element = d as IInputElement;
             if (element != null)
             {
                 if ((bool)e.NewValue)
@@ -339,7 +314,7 @@ namespace Emanate.Core.Input.TeamCity
             if (target == null)
                 return null;
 
-            RoutedEventArgs args = new RoutedEventArgs();
+            var args = new RoutedEventArgs();
             args.RoutedEvent = ToggleButton.CheckedEvent;
             RaiseEvent(target, args);
             return args;
@@ -358,7 +333,7 @@ namespace Emanate.Core.Input.TeamCity
             if (target == null)
                 return null;
 
-            RoutedEventArgs args = new RoutedEventArgs();
+            var args = new RoutedEventArgs();
             args.RoutedEvent = ToggleButton.UncheckedEvent;
             RaiseEvent(target, args);
             return args;
@@ -377,7 +352,7 @@ namespace Emanate.Core.Input.TeamCity
             if (target == null)
                 return null;
 
-            RoutedEventArgs args = new RoutedEventArgs();
+            var args = new RoutedEventArgs();
             args.RoutedEvent = ToggleButton.IndeterminateEvent;
             RaiseEvent(target, args);
             return args;
@@ -397,7 +372,11 @@ namespace Emanate.Core.Input.TeamCity
 
         private static void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.OriginalSource == sender)
+            var senderObject = sender as DependencyObject;
+            if (senderObject == null)
+                return;
+
+            if (e.OriginalSource == senderObject)
             {
                 if (e.Key == Key.Space)
                 {
@@ -409,7 +388,7 @@ namespace Emanate.Core.Input.TeamCity
                     e.Handled = true;
 
                 }
-                else if (e.Key == Key.Enter && (bool)(sender as DependencyObject).GetValue(KeyboardNavigation.AcceptsReturnProperty))
+                else if (e.Key == Key.Enter && (bool)(senderObject).GetValue(KeyboardNavigation.AcceptsReturnProperty))
                 {
                     UpdateIsChecked(sender as DependencyObject);
                     e.Handled = true;
@@ -419,10 +398,10 @@ namespace Emanate.Core.Input.TeamCity
 
         private static void UpdateIsChecked(DependencyObject d)
         {
-            Nullable<bool> isChecked = GetIsChecked(d);
+            var isChecked = GetIsChecked(d);
             if (isChecked == true)
             {
-                SetIsChecked(d, GetIsThreeState(d) ? (Nullable<bool>)null : (Nullable<bool>)false);
+                SetIsChecked(d, GetIsThreeState(d) ? (bool?)null : false);
             }
             else
             {
